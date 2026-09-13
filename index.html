@@ -1,0 +1,997 @@
+<title>創意打版台</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Noto+Sans+TC:wght@400;500;600&family=Noto+Serif+TC:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#EEF0E2;
+    --surface:#FFFFFF;
+    --surface-2:#F6F7EE;
+    --ink:#1E2A22;
+    --ink-dim:#5B664F;
+    --line:#C9CDB4;
+    --line-strong:#AFB598;
+    --accent:#2F6B4F;
+    --accent-ink:#FFFFFF;
+    --g-a:#2F6B4F;
+    --g-b:#1F6E8C;
+    --g-c:#B8620E;
+    --g-d:#B23A24;
+    --shadow:0 1px 2px rgba(30,42,34,.08),0 8px 20px rgba(30,42,34,.07);
+    --radius:5px;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#121A15;
+      --surface:#1B2620;
+      --surface-2:#212E26;
+      --ink:#E8ECE0;
+      --ink-dim:#A6B29C;
+      --line:#33453A;
+      --line-strong:#435849;
+      --accent:#59BB8B;
+      --accent-ink:#0E1712;
+      --g-a:#59BB8B;
+      --g-b:#5EC2E8;
+      --g-c:#F0A24E;
+      --g-d:#E8735C;
+      --shadow:0 1px 2px rgba(0,0,0,.45),0 10px 24px rgba(0,0,0,.4);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#121A15;
+    --surface:#1B2620;
+    --surface-2:#212E26;
+    --ink:#E8ECE0;
+    --ink-dim:#A6B29C;
+    --line:#33453A;
+    --line-strong:#435849;
+    --accent:#59BB8B;
+    --accent-ink:#0E1712;
+    --g-a:#59BB8B;
+    --g-b:#5EC2E8;
+    --g-c:#F0A24E;
+    --g-d:#E8735C;
+    --shadow:0 1px 2px rgba(0,0,0,.45),0 10px 24px rgba(0,0,0,.4);
+  }
+  *{box-sizing:border-box;}
+  @media (prefers-reduced-motion: reduce){
+    *{transition:none!important;animation:none!important;}
+  }
+  body{
+    margin:0;
+    background:
+      linear-gradient(var(--line) 1px, transparent 1px) 0 0/28px 28px,
+      linear-gradient(90deg, var(--line) 1px, transparent 1px) 0 0/28px 28px,
+      var(--bg);
+    color:var(--ink);
+    font-family:'Noto Sans TC','Noto Sans',sans-serif;
+    padding-inline:20px;
+    padding-block:28px 48px;
+  }
+  .wrap{max-width:1120px;margin:0 auto;}
+
+  /* ---------- header tag ---------- */
+  .tag{
+    position:relative;
+    background:var(--surface);
+    border:1px solid var(--line-strong);
+    border-radius:var(--radius);
+    box-shadow:var(--shadow);
+    padding:22px 26px 22px 34px;
+    margin-bottom:18px;
+  }
+  .tag::before{
+    content:"";
+    position:absolute;
+    left:14px; top:50%;
+    width:10px; height:10px;
+    margin-top:-5px;
+    border-radius:50%;
+    background:var(--bg);
+    border:1px solid var(--line-strong);
+  }
+  .eyebrow{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:11px;
+    letter-spacing:.14em;
+    text-transform:uppercase;
+    color:var(--accent);
+    font-weight:600;
+  }
+  h1{
+    font-family:'Noto Serif TC',serif;
+    font-weight:700;
+    font-size:clamp(24px,4vw,32px);
+    line-height:1.25;
+    margin:4px 0 8px;
+    text-wrap:balance;
+  }
+  .tag p{
+    margin:0;
+    color:var(--ink-dim);
+    font-size:14px;
+    line-height:1.7;
+    max-width:70ch;
+  }
+
+  /* ---------- editor ---------- */
+  .editor{
+    background:var(--surface-2);
+    border:1px dashed var(--line-strong);
+    border-radius:var(--radius);
+    padding:14px 16px;
+    margin-bottom:18px;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+  }
+  .editor-hint{
+    font-size:12px;
+    color:var(--ink-dim);
+  }
+  .editor-row{display:flex;flex-wrap:wrap;align-items:center;gap:8px;}
+  .editor-label{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:10px;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    color:var(--ink-dim);
+    flex:none;
+    width:64px;
+  }
+  .chip-list{display:flex;flex-wrap:wrap;gap:6px;}
+  .echip{
+    display:inline-flex;align-items:center;gap:6px;
+    background:var(--surface);
+    border:1px solid var(--line-strong);
+    border-radius:999px;
+    padding:5px 6px 5px 12px;
+    font-size:13px;
+  }
+  .echip .dot{width:9px;height:9px;border-radius:50%;background:var(--vc);flex:none;}
+  .echip-text{outline:none;min-width:1ch;cursor:text;}
+  .echip-text:focus{background:var(--bg);border-radius:3px;padding:0 3px;}
+  .echip-x{
+    border:none;background:transparent;color:var(--ink-dim);cursor:pointer;
+    font-size:15px;line-height:1;width:18px;height:18px;border-radius:50%;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .echip-x:hover{background:var(--line);color:var(--ink);}
+  .echip.shake{animation:shake .3s;}
+  @keyframes shake{25%{transform:translateX(-3px);}75%{transform:translateX(3px);}}
+  .add-form{display:inline-flex;gap:4px;}
+  .add-form input{
+    font:inherit;font-size:13px;border:1px solid var(--line-strong);
+    border-radius:999px;padding:5px 12px;background:var(--surface);color:var(--ink);
+    width:112px;
+  }
+  .add-form button{
+    border:1px solid var(--line-strong);background:var(--accent);color:var(--accent-ink);
+    border-radius:50%;width:26px;height:26px;cursor:pointer;font-size:15px;line-height:1;
+  }
+
+  /* ---------- toolbar ---------- */
+  .toolbar{
+    display:flex;flex-wrap:wrap;gap:10px 14px;align-items:center;
+    margin-bottom:18px;
+  }
+  .segmented{display:flex;border:1px solid var(--line-strong);border-radius:999px;overflow:hidden;}
+  .viewbtn{
+    font-family:'IBM Plex Mono',monospace;font-size:12px;letter-spacing:.03em;
+    padding:7px 14px;background:var(--surface);color:var(--ink-dim);border:none;cursor:pointer;
+  }
+  .viewbtn[aria-pressed="true"]{background:var(--accent);color:var(--accent-ink);font-weight:600;}
+  .sortbtn{
+    font-family:'IBM Plex Mono',monospace;font-size:12px;display:inline-flex;align-items:center;gap:5px;
+    padding:7px 12px;border-radius:999px;border:1px solid var(--line-strong);background:var(--surface);
+    color:var(--ink);cursor:pointer;
+  }
+  .chip:focus-visible,.cell:focus-visible,.rank-row:focus-visible,.viewbtn:focus-visible,.echip-x:focus-visible{
+    outline:2px solid var(--accent);outline-offset:2px;
+  }
+
+  /* ---------- workbench layout ---------- */
+  .workbench{display:grid;grid-template-columns:1fr 340px;gap:20px;align-items:start;}
+  @media (max-width:880px){.workbench{grid-template-columns:1fr;}}
+
+  /* ---------- matrix ---------- */
+  .matrix{display:grid;grid-template-columns:118px repeat(var(--val-count,3),1fr);gap:10px;}
+  @media (max-width:640px){
+    .matrix{grid-template-columns:1fr;}
+    .corner,.col-head{display:none;}
+  }
+  .corner,.col-head,.row-head{
+    display:flex;align-items:center;gap:8px;
+    font-family:'IBM Plex Mono',monospace;font-size:12px;color:var(--ink-dim);padding:6px 4px;
+  }
+  .corner{font-size:10px;letter-spacing:.06em;align-items:flex-end;}
+  .col-head{justify-content:center;font-weight:600;color:var(--ink);}
+  .col-head .dot{width:9px;height:9px;border-radius:50%;background:var(--vc);}
+  .row-head{font-weight:600;color:var(--ink);}
+  @media (max-width:640px){
+    .row-head{margin-top:6px;padding:8px 10px;background:var(--surface-2);border-radius:var(--radius);border:1px solid var(--line);}
+  }
+
+  .cell{
+    position:relative;display:flex;flex-direction:column;gap:8px;text-align:left;
+    background:var(--surface);border:1px solid var(--line-strong);border-top:none;
+    padding:14px 14px 12px;cursor:pointer;font-family:inherit;color:var(--ink);
+    clip-path:polygon(0 0, calc(100% - 12px) 0, 100% 12px, 100% 100%, 0 100%);
+    transition:transform .12s ease, box-shadow .12s ease;
+  }
+  .cell::before{content:"";position:absolute;left:0;top:0;right:0;height:4px;background:var(--vc);}
+  .cell:hover{transform:translateY(-2px);box-shadow:var(--shadow);}
+  .cell.active{box-shadow:0 0 0 2px var(--vc), var(--shadow);}
+  .cell-head{display:flex;justify-content:space-between;align-items:flex-start;gap:6px;}
+  .cell-score{
+    font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:16px;color:var(--vc);
+    font-variant-numeric:tabular-nums;flex:none;
+  }
+  .cell-title{font-family:'Noto Serif TC',serif;font-weight:700;font-size:14px;line-height:1.4;text-wrap:balance;}
+  .cell-tag{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.04em;color:var(--ink-dim);}
+  .bar{height:4px;background:var(--line);border-radius:2px;overflow:hidden;}
+  .bar-fill{height:100%;background:var(--vc);}
+
+  /* ---------- ranked list ---------- */
+  .rank-list{display:flex;flex-direction:column;gap:8px;}
+  .rank-row{
+    display:grid;grid-template-columns:28px 1fr auto;gap:14px;align-items:center;width:100%;
+    text-align:left;background:var(--surface);border:1px solid var(--line-strong);border-left:4px solid var(--vc);
+    border-radius:var(--radius);padding:11px 14px;cursor:pointer;font-family:inherit;color:var(--ink);
+  }
+  .rank-row.active{box-shadow:0 0 0 2px var(--vc);}
+  .rank-num{font-family:'IBM Plex Mono',monospace;font-weight:600;color:var(--ink-dim);font-variant-numeric:tabular-nums;}
+  .rank-title{font-family:'Noto Serif TC',serif;font-weight:700;font-size:14.5px;display:block;}
+  .rank-meta{font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink-dim);}
+  .rank-score{
+    font-family:'IBM Plex Mono',monospace;font-weight:700;color:var(--vc);
+    font-variant-numeric:tabular-nums;justify-self:end;font-size:17px;
+  }
+  .empty{padding:26px;text-align:center;color:var(--ink-dim);font-size:13px;background:var(--surface);border:1px dashed var(--line-strong);border-radius:var(--radius);}
+
+  /* ---------- detail panel ---------- */
+  .detail{
+    background:var(--surface);border:1px solid var(--line-strong);border-radius:var(--radius);
+    box-shadow:var(--shadow);padding:20px 20px 22px;
+    max-height:calc(100vh - 40px);overflow:auto;
+  }
+  .detail-eyebrow{
+    font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.08em;
+    color:var(--vc);font-weight:600;margin-bottom:6px;
+  }
+  .detail h2{font-family:'Noto Serif TC',serif;font-size:19px;line-height:1.35;margin:0 0 10px;text-wrap:balance;}
+  .detail-desc{font-size:13px;line-height:1.8;color:var(--ink);margin:0 0 14px;}
+  .step-list{display:flex;flex-direction:column;gap:8px;margin:0 0 12px;}
+  .step{display:flex;gap:9px;padding:9px 10px;border:1px solid var(--line);border-left:3px solid var(--gc);border-radius:4px;background:var(--surface-2);}
+  .step-num{font-family:'IBM Plex Mono',monospace;font-weight:600;font-size:11px;color:var(--ink-dim);flex:none;padding-top:2px;}
+  .step-body{flex:1;min-width:0;}
+  .step-head{display:flex;justify-content:space-between;align-items:baseline;gap:8px;margin-bottom:3px;}
+  .step-name{font-weight:600;font-size:12.5px;}
+  .step-score{font-family:'IBM Plex Mono',monospace;font-weight:700;font-variant-numeric:tabular-nums;}
+  .step-text{font-size:12px;line-height:1.65;color:var(--ink-dim);margin:0;}
+  .overall-row{
+    display:flex;align-items:center;justify-content:space-between;gap:10px;
+    background:var(--surface-2);border:1px solid var(--line-strong);border-radius:4px;padding:10px 14px;
+  }
+  .overall-label{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.06em;color:var(--ink-dim);}
+  .overall-calc{font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--ink-dim);}
+  .overall-num{font-family:'IBM Plex Mono',monospace;font-weight:700;font-size:22px;font-variant-numeric:tabular-nums;}
+  .grade-pill{
+    display:inline-block;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;
+    padding:2px 9px;border-radius:999px;margin-left:8px;color:#fff;vertical-align:middle;
+  }
+
+  /* ---------- AI panel ---------- */
+  .ai-panel{
+    background:var(--surface-2);border:1px dashed var(--line-strong);border-radius:var(--radius);
+    padding:14px 16px;margin-bottom:18px;display:flex;flex-direction:column;gap:10px;
+  }
+  .ai-panel-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;}
+  .ai-select,.ai-input{
+    font:inherit;font-size:13px;border:1px solid var(--line-strong);border-radius:6px;
+    padding:6px 10px;background:var(--surface);color:var(--ink);
+  }
+  .ai-input{width:150px;}
+  .ai-progress{
+    font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--accent);
+  }
+  .detail-ai-row{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:10px;}
+  .source-tag{
+    font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.05em;
+    padding:2px 8px;border-radius:999px;border:1px solid var(--line-strong);color:var(--ink-dim);
+  }
+  .source-tag.is-ai{color:var(--accent-ink);background:var(--accent);border-color:var(--accent);}
+  .mini-btn{
+    font-family:'IBM Plex Mono',monospace;font-size:11px;padding:4px 10px;border-radius:999px;
+    border:1px solid var(--line-strong);background:var(--surface);color:var(--ink);cursor:pointer;
+  }
+  .mini-btn:disabled{opacity:.5;cursor:default;}
+  .ai-error{
+    font-size:12px;color:var(--g-d);background:var(--surface-2);border:1px solid var(--g-d);
+    border-radius:4px;padding:8px 10px;margin-bottom:12px;
+  }
+
+  footer{max-width:1120px;margin:24px auto 0;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink-dim);text-align:center;}
+</style>
+
+<div class="wrap">
+
+  <div class="tag">
+    <div class="eyebrow">PRODUCT × VALUE INNOVATION MATRIX</div>
+    <h1>創意打版台</h1>
+    <p>把產品跟附加價值攤在打版桌上交叉配對，每一格用「市場需求、收益性、競爭優勢、可擴展性、社會影響」五個商業構面各評 1-5 分，逐步列出評分理由再算出總平均，評分方式比照工作區的商業創意產生器與商業策略工作室。</p>
+  </div>
+
+  <div class="editor">
+    <div class="editor-hint">點文字可改名・點 × 可移除・輸入框可新增，矩陣會即時重新產生。</div>
+    <div class="editor-row">
+      <span class="editor-label">產品</span>
+      <div class="chip-list" id="product-chips"></div>
+      <form class="add-form" data-type="product">
+        <input type="text" placeholder="新增產品…" aria-label="新增產品" maxlength="12">
+        <button type="submit" aria-label="新增產品">＋</button>
+      </form>
+    </div>
+    <div class="editor-row">
+      <span class="editor-label">附加價值</span>
+      <div class="chip-list" id="value-chips"></div>
+      <form class="add-form" data-type="value">
+        <input type="text" placeholder="新增附加價值…" aria-label="新增附加價值" maxlength="12">
+        <button type="submit" aria-label="新增附加價值">＋</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="ai-panel">
+    <div class="editor-hint">不填金鑰也能用規則式示範；填入你自己的 LLM API 金鑰，可讓描述與評分理由更貼近實際情況——金鑰只存在你的瀏覽器，不會上傳到任何伺服器。</div>
+    <div class="ai-panel-row">
+      <select id="ai-provider" class="ai-select" aria-label="AI 服務商"></select>
+      <input type="text" id="ai-model" class="ai-input" placeholder="模型名稱" aria-label="模型名稱">
+      <input type="password" id="ai-key" class="ai-input" style="flex:1;min-width:180px;" placeholder="API 金鑰" aria-label="API 金鑰">
+      <button type="button" class="sortbtn" id="ai-bulk">🤖 全部套用 AI</button>
+    </div>
+    <div class="ai-progress" id="ai-progress" hidden></div>
+  </div>
+
+  <div class="toolbar">
+    <div class="segmented" role="tablist" aria-label="檢視方式">
+      <button class="viewbtn" data-view="matrix" aria-pressed="true">矩陣檢視</button>
+      <button class="viewbtn" data-view="ranked" aria-pressed="false">排行檢視</button>
+    </div>
+    <button class="sortbtn" id="sort-toggle" hidden>綜合評分 高→低 ↓</button>
+  </div>
+
+  <div class="workbench">
+    <div id="stage"></div>
+    <aside class="detail" id="detail" aria-live="polite"></aside>
+  </div>
+
+</div>
+
+<footer>評分為規則式推演或使用者自帶金鑰的 AI 生成示範，非真實市場調查數據，僅供發想比較之用，請自行查證後再作商業決策。</footer>
+
+<script>
+(function(){
+  var LIGHT_PALETTE = ['#A03D68','#187A70','#B8620E','#3B5B8C','#6B6620','#7C3F9E','#3F6B3D','#9C4A2E'];
+  var DARK_PALETTE  = ['#E689B1','#4FD2C6','#F0A24E','#8FB1E8','#D8CE6E','#C79BE8','#8FCB8C','#E3906E'];
+
+  var DIMENSIONS = [
+    {id:'demand',  name:'市場需求'},
+    {id:'profit',  name:'收益性'},
+    {id:'edge',    name:'競爭優勢'},
+    {id:'scale',   name:'可擴展性'},
+    {id:'impact',  name:'社會影響'}
+  ];
+
+  var TITLE_TEMPLATES = [
+    '{product}的{value}再設計',
+    '{value}導向{product}',
+    '下一代{value}{product}',
+    '{product}×{value}提案',
+    '模組化{value}{product}'
+  ];
+
+  var DESC_TEMPLATES = [
+    '在{product}導入「{value}」導向的設計語言，從材質、剪裁到細節工藝全面圍繞這個訴求重新規劃，形成獨立產品線。',
+    '把「{value}」拆解成可感知的具體功能，模組化嵌入{product}的關鍵部位，讓消費者一眼就能感受到差異。',
+    '以「{value}」為主軸重新定義{product}的使用情境，針對通勤、運動、夜間、戶外等特定場景打造專屬版本。',
+    '結合感測或智慧元件，讓{product}能主動回應「{value}」的需求，從被動穿戴升級成主動輔助。',
+    '採用可拆換、可升級的模組化架構，讓{product}的「{value}」隨使用者需求持續進化，而非一次性設計。',
+    '跨界借用其他產業成熟的「{value}」相關技術，移植到{product}上，創造原本品類少見的複合功能。'
+  ];
+
+  var DIM_TEXT = {
+    demand:{
+      high:['消費者對「{value}」的需求正快速成長，{product}若搶先主打這個訴求，能對準目前尚未被滿足的缺口。',
+            '近期關於{product}的討論中，「{value}」是被提及頻率最高的關鍵字之一，市場需求訊號明確。'],
+      mid:['「{value}」在{product}這個品類還屬於加分項而非剛需，需求存在但要靠溝通去放大。',
+           '部分消費者已開始注意{product}的「{value}」表現，但尚未形成主流採購理由。'],
+      low:['多數人選購{product}時，「{value}」通常不是第一考量，市場需求相對薄弱。',
+           '「{value}」目前更像是{product}的加分話術，實際驅動購買的力道有限。']
+    },
+    profit:{
+      high:['以「{value}」為核心賣點的{product}，通常能支撐比一般款高出一截的定價，毛利空間可觀。',
+            '強調「{value}」讓{product}脫離低價競爭，消費者願意為這個訴求多付費。'],
+      mid:['「{value}」可以讓{product}訂價略高一點，但漲幅有限，收益提升屬於漸進式而非跳躍式。',
+           '初期投入「{value}」的開發成本會壓縮毛利，需要靠銷量攤平。'],
+      low:['「{value}」帶來的成本增加，未必能反映在{product}的最終售價上，短期收益偏薄。',
+           '若消費者不埋單「{value}」這個訴求，{product}的獲利反而會被額外成本拖累。']
+    },
+    edge:{
+      high:['把「{value}」做深做透，能讓{product}在同質化嚴重的市場裡建立明顯的辨識度。',
+            '目前同類{product}少有主打「{value}」，先卡位能取得一段時間的差異化優勢。'],
+      mid:['「{value}」是可被模仿的方向，優勢期不長，需要持續迭代才能維持領先。',
+           '「{value}」能製造話題，但護城河不深，容易被競品快速跟進。'],
+      low:['市場上主打「{value}」的{product}已不少，單靠這個訴求很難形成獨特優勢。',
+           '「{value}」已是{product}品類的基本配備，難以構成差異化賣點。']
+    },
+    scale:{
+      high:['「{value}」這個設計思路容易延伸到{product}以外的品項，形成一條可複製的產品系列。',
+            '一旦「{value}」的技術／供應鏈打通，{product}的規模化生產與擴充品項都相對容易。'],
+      mid:['「{value}」需要客製化程度較高，擴大生產規模時，品質與成本控制會是挑戰。',
+           '{product}要放大「{value}」訴求，需要額外投入產線調整，擴展速度中等。'],
+      low:['「{value}」高度依賴手工或特定製程，{product}要規模化生產的難度較高。',
+           '「{value}」的材料或技術取得不易，短期內難以支撐大量擴產。']
+    },
+    impact:{
+      high:['{product}加入「{value}」，能實際降低特定族群（如長者、夜間工作者）的風險或不便，社會效益明確。',
+            '「{value}」的{product}若普及，有機會帶動整體產業對這個議題的重視，外溢效果正向。'],
+      mid:['「{value}」對使用者有感，但影響範圍集中在特定小眾族群，社會擴散效果中等。',
+           '{product}導入「{value}」是好事，但單一品牌的影響力有限，需要產業共同推動才看得出效果。'],
+      low:['「{value}」比較偏向個人使用體驗提升，對社會層面的外溢效益不明顯。',
+           '{product}的「{value}」訴求主要是商業考量，社會影響力層面較薄弱。']
+    }
+  };
+
+  var GRADE_LABEL = {a:'優異', b:'良好', c:'普通', d:'待加強'};
+  var GRADE_VAR   = {a:'--g-a', b:'--g-b', c:'--g-c', d:'--g-d'};
+  function gradeOf(score){
+    if (score >= 4.2) return 'a';
+    if (score >= 3.2) return 'b';
+    if (score >= 2.2) return 'c';
+    return 'd';
+  }
+  function gradeVar(score){ return 'var('+GRADE_VAR[gradeOf(score)]+')'; }
+
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, function(c){
+      return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+    });
+  }
+  function fill(tpl, product, value){
+    return tpl.split('{product}').join(product).split('{value}').join(value);
+  }
+  function hashStr(s){
+    var h = 0;
+    for (var i=0;i<s.length;i++){ h = (h<<5)-h+s.charCodeAt(i); h |= 0; }
+    return Math.abs(h);
+  }
+
+  var state = {
+    nextProductId: 4,
+    nextValueId: 4,
+    products: [{id:'p1',name:'襪子'},{id:'p2',name:'帽子'},{id:'p3',name:'衣服'}],
+    values:   [{id:'v1',name:'設計'},{id:'v2',name:'功能性'},{id:'v3',name:'安全性'}],
+    view:'matrix',
+    sortDesc:true,
+    selected:null,
+    aiCache:{},
+    aiErrors:{},
+    loadingKeys:{},
+    bulkRunning:false,
+    bulkStop:false
+  };
+
+  function clamp(n,min,max){ return Math.min(max, Math.max(min, n)); }
+
+  function getIdea(productName, valueName){
+    var nk = productName+'|'+valueName;
+    var cached = state.aiCache[nk];
+    if (cached) return {title:cached.title, desc:cached.desc, dims:cached.dims, overall:cached.overall, source:'ai'};
+    var r = generateIdea(productName, valueName);
+    r.source = 'rule';
+    return r;
+  }
+
+  /* ---------- 選用 BYOK：Claude／OpenAI／Gemini／OpenRouter ---------- */
+  var AI_PROVIDERS = {
+    claude:     {label:'Claude（Anthropic）',       defaultModel:'claude-opus-4-8'},
+    openai:     {label:'OpenAI',                    defaultModel:'gpt-4o-mini'},
+    gemini:     {label:'Gemini（Google AI Studio）', defaultModel:'gemini-3.5-flash'},
+    openrouter: {label:'OpenRouter',                defaultModel:'openai/gpt-4o-mini'}
+  };
+  var AI_STORAGE_KEY = 'imsApiConfig';
+
+  function loadAiConfig(){
+    try{ return JSON.parse(localStorage.getItem(AI_STORAGE_KEY)) || {}; }catch(e){ return {}; }
+  }
+  function persistAiConfig(){
+    try{
+      localStorage.setItem(AI_STORAGE_KEY, JSON.stringify({
+        provider: document.getElementById('ai-provider').value,
+        model: document.getElementById('ai-model').value.trim(),
+        apiKey: document.getElementById('ai-key').value.trim()
+      }));
+    }catch(e){}
+  }
+  function currentAiConfig(){
+    var cfg = loadAiConfig();
+    var provider = (cfg.provider && AI_PROVIDERS[cfg.provider]) ? cfg.provider : 'claude';
+    return { provider: provider, model: cfg.model || AI_PROVIDERS[provider].defaultModel, apiKey: cfg.apiKey || '' };
+  }
+  function initAiPanel(){
+    var sel = document.getElementById('ai-provider');
+    sel.innerHTML = Object.keys(AI_PROVIDERS).map(function(k){
+      return '<option value="'+k+'">'+AI_PROVIDERS[k].label+'</option>';
+    }).join('');
+    var cfg = currentAiConfig();
+    sel.value = cfg.provider;
+    document.getElementById('ai-model').value = cfg.model;
+    document.getElementById('ai-key').value = cfg.apiKey;
+    sel.addEventListener('change', function(){
+      var modelEl = document.getElementById('ai-model');
+      var isDefault = Object.keys(AI_PROVIDERS).some(function(k){ return AI_PROVIDERS[k].defaultModel === modelEl.value.trim(); });
+      if (!modelEl.value.trim() || isDefault) modelEl.value = AI_PROVIDERS[sel.value].defaultModel;
+      persistAiConfig();
+    });
+    document.getElementById('ai-model').addEventListener('input', persistAiConfig);
+    document.getElementById('ai-key').addEventListener('input', persistAiConfig);
+  }
+
+  async function callLLM(provider, model, apiKey, prompt){
+    var url, headers, body, extract;
+    if (provider === 'claude'){
+      url = 'https://api.anthropic.com/v1/messages';
+      headers = {'content-type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'};
+      body = {model:model, max_tokens:2000, messages:[{role:'user', content:prompt}]};
+      extract = function(d){
+        if (d.stop_reason === 'refusal') throw new Error('模型拒絕了這個請求（refusal）');
+        var t = (d.content||[]).filter(function(b){return b.type==='text';}).map(function(b){return b.text;}).join('');
+        if (!t) throw new Error('回應中沒有文字內容');
+        return t;
+      };
+    } else if (provider === 'openai'){
+      url = 'https://api.openai.com/v1/chat/completions';
+      headers = {'content-type':'application/json','authorization':'Bearer '+apiKey};
+      body = {model:model, messages:[{role:'user', content:prompt}]};
+      extract = function(d){
+        var t = d.choices && d.choices[0] && d.choices[0].message && d.choices[0].message.content;
+        if (!t) throw new Error('回應中沒有文字內容');
+        return t;
+      };
+    } else if (provider === 'gemini'){
+      url = 'https://generativelanguage.googleapis.com/v1beta/models/'+encodeURIComponent(model)+':generateContent';
+      headers = {'content-type':'application/json','x-goog-api-key':apiKey};
+      body = {contents:[{parts:[{text:prompt}]}]};
+      extract = function(d){
+        var parts = (d.candidates && d.candidates[0] && d.candidates[0].content && d.candidates[0].content.parts) || [];
+        var t = parts.map(function(p){return p.text||'';}).join('');
+        if (!t) throw new Error('回應中沒有文字內容');
+        return t;
+      };
+    } else if (provider === 'openrouter'){
+      url = 'https://openrouter.ai/api/v1/chat/completions';
+      headers = {'content-type':'application/json','authorization':'Bearer '+apiKey};
+      body = {model:model, messages:[{role:'user', content:prompt}]};
+      extract = function(d){
+        var t = d.choices && d.choices[0] && d.choices[0].message && d.choices[0].message.content;
+        if (!t) throw new Error('回應中沒有文字內容');
+        return t;
+      };
+    } else {
+      throw new Error('不支援的服務商');
+    }
+
+    var RETRYABLE = {429:1,500:1,503:1,529:1};
+    var MAX_TRIES = 3;
+    for (var attempt=1; attempt<=MAX_TRIES; attempt++){
+      var resp = await fetch(url, {method:'POST', headers:headers, body:JSON.stringify(body), signal:AbortSignal.timeout(120000)});
+      var raw = await resp.text();
+      if (resp.ok) return extract(JSON.parse(raw));
+      var msg = raw.slice(0,300);
+      try{ var err = JSON.parse(raw); msg = (err.error && err.error.message) || err.message || msg; }catch(e){}
+      if (RETRYABLE[resp.status] && attempt<MAX_TRIES){
+        await new Promise(function(r){ setTimeout(r, attempt*6000); });
+        continue;
+      }
+      if (resp.status===401 || resp.status===403) msg += '——請確認 API 金鑰是否正確、是否對應到你選的服務商';
+      if (resp.status===404) msg += '——請確認模型名稱是否正確';
+      throw new Error('API 回應 '+resp.status+'：'+msg);
+    }
+  }
+
+  function buildPrompt(productName, valueName){
+    var dimLines = DIMENSIONS.map(function(d){ return '- '+d.id+'（'+d.name+'）'; }).join('\n');
+    var lines = [];
+    lines.push('你是一位熟悉消費性商品開發與市場評估的商業顧問。請針對以下產品與附加價值的交叉組合，設計一個具體、務實可行的創新提案。');
+    lines.push('產品：'+productName);
+    lines.push('附加價值：'+valueName);
+    lines.push('');
+    lines.push('請提供：一個12字以內、有記憶點的提案標題；以及一段120-200字的創新描述，具體說明怎麼做、加在產品的哪個部位或環節，避免空泛。');
+    lines.push('並針對以下5個商業構面各評1-5分整數，每項都要給一段30-80字、具體點出跟這個「'+productName+'×'+valueName+'」提案直接相關的評分理由（不要空泛套話）：');
+    lines.push(dimLines);
+    lines.push('');
+    lines.push('請只輸出一個 JSON 物件，不要 markdown 圍欄、不要任何其他文字，格式固定為：');
+    lines.push('{"title":"...","desc":"...","dimensions":{"demand":{"score":0,"reason":"..."},"profit":{"score":0,"reason":"..."},"edge":{"score":0,"reason":"..."},"scale":{"score":0,"reason":"..."},"impact":{"score":0,"reason":"..."}}}');
+    return lines.join('\n');
+  }
+
+  function extractJsonObject(text){
+    var cleaned = text.replace(/```json|```/g, '');
+    var start = cleaned.indexOf('{');
+    var end = cleaned.lastIndexOf('}');
+    if (start<0 || end<=start) throw new Error('模型輸出中找不到 JSON 物件：'+text.slice(0,120));
+    return JSON.parse(cleaned.slice(start, end+1));
+  }
+
+  function clampScore(n){
+    n = Number(n);
+    if (!isFinite(n)) return null;
+    return clamp(Math.round(n), 1, 5);
+  }
+
+  function validateAiResult(parsed, ruleResult){
+    var title = typeof parsed.title==='string' ? parsed.title.trim().slice(0,40) : '';
+    var desc  = typeof parsed.desc==='string'  ? parsed.desc.trim().slice(0,400)  : '';
+    if (!title) title = ruleResult.title;
+    if (!desc)  desc  = ruleResult.desc;
+    var dims = DIMENSIONS.map(function(d){
+      var src = parsed.dimensions && parsed.dimensions[d.id];
+      var score = src ? clampScore(src.score) : null;
+      var reason = src && typeof src.reason==='string' ? src.reason.trim().slice(0,220) : '';
+      if (score!==null && reason) return {id:d.id, name:d.name, score:score, text:reason};
+      return ruleResult.dims.filter(function(x){return x.id===d.id;})[0];
+    });
+    var overall = dims.reduce(function(s,d){return s+d.score;},0) / dims.length;
+    return {title:title, desc:desc, dims:dims, overall:overall};
+  }
+
+  async function runAiRegenerate(productName, valueName){
+    var nk = productName+'|'+valueName;
+    if (state.loadingKeys[nk]) return;
+    var cfg = currentAiConfig();
+    if (!cfg.apiKey){
+      state.aiErrors[nk] = '尚未填寫 API 金鑰，請先在上方「AI 優化」區塊輸入金鑰。';
+      renderAll();
+      return;
+    }
+    state.loadingKeys[nk] = true;
+    renderAll();
+    try{
+      var ruleResult = generateIdea(productName, valueName);
+      var raw = await callLLM(cfg.provider, cfg.model, cfg.apiKey, buildPrompt(productName, valueName));
+      var parsed = extractJsonObject(raw);
+      state.aiCache[nk] = validateAiResult(parsed, ruleResult);
+      delete state.aiErrors[nk];
+    }catch(err){
+      state.aiErrors[nk] = err && err.message ? err.message : String(err);
+    }
+    delete state.loadingKeys[nk];
+    renderAll();
+  }
+
+  async function runAiBulk(){
+    if (state.bulkRunning){ state.bulkStop = true; return; }
+    var cfg = currentAiConfig();
+    var progress = document.getElementById('ai-progress');
+    if (!cfg.apiKey){
+      progress.hidden = false;
+      progress.textContent = '請先在上方輸入 API 金鑰，才能整批套用 AI。';
+      return;
+    }
+    state.bulkRunning = true; state.bulkStop = false;
+    updateBulkButton();
+    var combos = [];
+    state.products.forEach(function(p){ state.values.forEach(function(v){ combos.push({p:p.name, v:v.name}); }); });
+    for (var i=0; i<combos.length; i++){
+      if (state.bulkStop) break;
+      progress.hidden = false;
+      progress.textContent = '生成中 '+(i+1)+'/'+combos.length+'：'+combos[i].p+' × '+combos[i].v;
+      var nk = combos[i].p+'|'+combos[i].v;
+      try{
+        var ruleResult = generateIdea(combos[i].p, combos[i].v);
+        var raw = await callLLM(cfg.provider, cfg.model, cfg.apiKey, buildPrompt(combos[i].p, combos[i].v));
+        var parsed = extractJsonObject(raw);
+        state.aiCache[nk] = validateAiResult(parsed, ruleResult);
+        delete state.aiErrors[nk];
+      }catch(err){
+        state.aiErrors[nk] = err && err.message ? err.message : String(err);
+      }
+      renderAll();
+    }
+    progress.hidden = false;
+    progress.textContent = state.bulkStop ? '已停止。' : '全部完成。';
+    state.bulkRunning = false; state.bulkStop = false;
+    updateBulkButton();
+  }
+
+  function updateBulkButton(){
+    var btn = document.getElementById('ai-bulk');
+    btn.textContent = state.bulkRunning ? '⏹ 停止套用' : '🤖 全部套用 AI';
+  }
+
+  function currentPalette(){
+    var root = document.documentElement;
+    var explicit = root.getAttribute('data-theme');
+    var dark = explicit === 'dark' || (!explicit && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    return dark ? DARK_PALETTE : LIGHT_PALETTE;
+  }
+  function colorFor(valueIndex){
+    var pal = currentPalette();
+    return pal[valueIndex % pal.length];
+  }
+
+  function generateIdea(productName, valueName){
+    var seed = hashStr(productName+'|'+valueName);
+    var title = fill(TITLE_TEMPLATES[seed % TITLE_TEMPLATES.length], productName, valueName);
+    var desc  = fill(DESC_TEMPLATES[seed % DESC_TEMPLATES.length], productName, valueName);
+    var dims = DIMENSIONS.map(function(d){
+      var dseed = hashStr(productName+'|'+valueName+'|'+d.id);
+      var score = 1 + (dseed % 5);
+      var band = score<=2 ? 'low' : (score===3 ? 'mid' : 'high');
+      var variants = DIM_TEXT[d.id][band];
+      var text = fill(variants[dseed % variants.length], productName, valueName);
+      return {id:d.id, name:d.name, score:score, text:text};
+    });
+    var overall = dims.reduce(function(sum,d){return sum+d.score;},0) / dims.length;
+    return {title:title, desc:desc, dims:dims, overall:overall};
+  }
+
+  function findProduct(id){ for(var i=0;i<state.products.length;i++) if(state.products[i].id===id) return state.products[i]; return null; }
+  function findValueIdx(id){ for(var i=0;i<state.values.length;i++) if(state.values[i].id===id) return i; return -1; }
+
+  function allIdeas(){
+    var out = [];
+    state.products.forEach(function(p){
+      state.values.forEach(function(v, vi){
+        var idea = getIdea(p.name, v.name);
+        idea.productId = p.id; idea.valueId = v.id;
+        idea.color = colorFor(vi);
+        idea.key = p.id+'|'+v.id;
+        idea.nameKey = p.name+'|'+v.name;
+        out.push(idea);
+      });
+    });
+    return out;
+  }
+
+  function ensureSelection(ideas){
+    var exists = ideas.some(function(i){return i.key===state.selected;});
+    if (!exists){
+      if (ideas.length===0){ state.selected = null; return; }
+      var best = ideas.slice().sort(function(a,b){return b.overall-a.overall;})[0];
+      state.selected = best.key;
+    }
+  }
+
+  function renderChips(){
+    var pc = document.getElementById('product-chips');
+    pc.innerHTML = state.products.map(function(p){
+      return '<span class="echip" data-type="product" data-id="'+p.id+'">'
+        + '<span class="echip-text" contenteditable="true" data-type="product" data-id="'+p.id+'">'+escapeHtml(p.name)+'</span>'
+        + '<button class="echip-x" data-type="product" data-id="'+p.id+'" aria-label="移除">×</button>'
+        + '</span>';
+    }).join('');
+
+    var vc = document.getElementById('value-chips');
+    vc.innerHTML = state.values.map(function(v, vi){
+      return '<span class="echip" data-type="value" data-id="'+v.id+'" style="--vc:'+colorFor(vi)+'">'
+        + '<span class="dot"></span>'
+        + '<span class="echip-text" contenteditable="true" data-type="value" data-id="'+v.id+'">'+escapeHtml(v.name)+'</span>'
+        + '<button class="echip-x" data-type="value" data-id="'+v.id+'" aria-label="移除">×</button>'
+        + '</span>';
+    }).join('');
+  }
+
+  function renderMatrix(ideas){
+    document.getElementById('stage').style.setProperty('--val-count', state.values.length);
+    if (ideas.length===0){
+      document.getElementById('stage').innerHTML = '<div class="empty">目前沒有任何組合，請先新增至少一個產品與一個附加價值。</div>';
+      return;
+    }
+    var byKey = {};
+    ideas.forEach(function(i){ byKey[i.key] = i; });
+    var html = '<div class="matrix">';
+    html += '<div class="corner">產品 ＼ 附加價值</div>';
+    state.values.forEach(function(v, vi){
+      html += '<div class="col-head" style="--vc:'+colorFor(vi)+'"><span class="dot"></span>'+escapeHtml(v.name)+'</div>';
+    });
+    state.products.forEach(function(p){
+      html += '<div class="row-head">'+escapeHtml(p.name)+'</div>';
+      state.values.forEach(function(v, vi){
+        var key = p.id+'|'+v.id;
+        var idea = byKey[key];
+        var color = colorFor(vi);
+        var gc = gradeVar(idea.overall);
+        var active = key===state.selected;
+        var aiTag = idea.source==='ai' ? ' ・ AI' : '';
+        html += '<button class="cell'+(active?' active':'')+'" style="--vc:'+color+'" data-key="'+key+'">'
+              + '<span class="cell-head"><span class="cell-title">'+escapeHtml(idea.title)+'</span>'
+              + '<span class="cell-score" style="color:'+gc+'">'+idea.overall.toFixed(1)+'</span></span>'
+              + '<div class="bar"><div class="bar-fill" style="width:'+(idea.overall*20)+'%;background:'+gc+'"></div></div>'
+              + '<span class="cell-tag">'+escapeHtml(v.name)+' ／ 綜合 '+idea.overall.toFixed(1)+' ・ '+GRADE_LABEL[gradeOf(idea.overall)]+aiTag+'</span>'
+              + '</button>';
+      });
+    });
+    html += '</div>';
+    document.getElementById('stage').innerHTML = html;
+  }
+
+  function renderRanked(ideas){
+    if (ideas.length===0){
+      document.getElementById('stage').innerHTML = '<div class="empty">目前沒有任何組合，請先新增至少一個產品與一個附加價值。</div>';
+      return;
+    }
+    var list = ideas.slice().sort(function(a,b){
+      return state.sortDesc ? b.overall-a.overall : a.overall-b.overall;
+    });
+    var html = '<div class="rank-list">';
+    list.forEach(function(idea, idx){
+      var p = findProduct(idea.productId);
+      var active = idea.key===state.selected;
+      var gc = gradeVar(idea.overall);
+      var aiTag = idea.source==='ai' ? ' ・ AI' : '';
+      html += '<button class="rank-row'+(active?' active':'')+'" style="--vc:'+idea.color+'" data-key="'+idea.key+'">'
+            + '<span class="rank-num">'+String(idx+1).padStart(2,'0')+'</span>'
+            + '<span class="rank-main"><span class="rank-title">'+escapeHtml(idea.title)+'</span>'
+            + '<span class="rank-meta">'+escapeHtml(p?p.name:'')+' × 綜合評分 ・ '+GRADE_LABEL[gradeOf(idea.overall)]+aiTag+'</span></span>'
+            + '<span class="rank-score" style="color:'+gc+'">'+idea.overall.toFixed(1)+'</span>'
+            + '</button>';
+    });
+    html += '</div>';
+    document.getElementById('stage').innerHTML = html;
+  }
+
+  function renderDetail(ideas){
+    var idea = ideas.filter(function(i){return i.key===state.selected;})[0];
+    var detail = document.getElementById('detail');
+    if (!idea){ detail.innerHTML = '<div class="empty">尚無可顯示的組合。</div>'; return; }
+    var p = findProduct(idea.productId);
+    var vIdx = findValueIdx(idea.valueId);
+    var vName = vIdx>=0 ? state.values[vIdx].name : '';
+    var steps = idea.dims.map(function(d, i){
+      var gc = gradeVar(d.score);
+      return '<div class="step" style="--gc:'+gc+'">'
+        + '<span class="step-num">STEP '+(i+1)+'</span>'
+        + '<div class="step-body">'
+        + '<div class="step-head"><span class="step-name">'+d.name+'</span><span class="step-score" style="color:'+gc+'">'+d.score+' / 5</span></div>'
+        + '<p class="step-text">'+escapeHtml(d.text)+'</p>'
+        + '</div></div>';
+    }).join('');
+    var calc = idea.dims.map(function(d){return d.score;}).join(' + ') + ' ) ÷ 5';
+    var oGrade = gradeOf(idea.overall);
+    var oColor = gradeVar(idea.overall);
+    var nk = p.name+'|'+vName;
+    var isLoading = !!state.loadingKeys[nk];
+    var aiError = state.aiErrors[nk];
+    var pn = escapeHtml(p.name), vn = escapeHtml(vName);
+    var aiRow = '<div class="detail-ai-row">'
+      + '<span class="source-tag'+(idea.source==='ai'?' is-ai':'')+'">'+(idea.source==='ai'?'AI 生成':'規則式示範')+'</span>'
+      + '<button class="mini-btn regen-btn" data-product="'+pn+'" data-value="'+vn+'"'+(isLoading?' disabled':'')+'>'
+      + (isLoading?'生成中…':'🤖 用 AI 重新生成')+'</button>'
+      + (idea.source==='ai' ? '<button class="mini-btn reset-btn" data-product="'+pn+'" data-value="'+vn+'">↺ 還原規則式</button>' : '')
+      + '</div>'
+      + (aiError ? '<div class="ai-error">'+escapeHtml(aiError)+'</div>' : '');
+    var html = '<div class="detail-eyebrow">'+escapeHtml(p?p.name:'')+' × '+escapeHtml(vName)+'</div>'
+      + '<h2>'+escapeHtml(idea.title)+'</h2>'
+      + aiRow
+      + '<p class="detail-desc">'+escapeHtml(idea.desc)+'</p>'
+      + '<div class="step-list">'+steps+'</div>'
+      + '<div class="overall-row">'
+      + '<div><div class="overall-label">綜合評分（5 構面平均）</div><div class="overall-calc">( '+calc+'</div></div>'
+      + '<div><span class="overall-num" style="color:'+oColor+'">'+idea.overall.toFixed(1)+'<span style="font-size:12px;color:var(--ink-dim);"> / 5</span></span>'
+      + '<span class="grade-pill" style="background:'+oColor+'">'+GRADE_LABEL[oGrade]+'</span></div>'
+      + '</div>';
+    detail.innerHTML = html;
+  }
+
+  function renderAll(){
+    var ideas = allIdeas();
+    ensureSelection(ideas);
+    renderChips();
+    if (state.view==='matrix') renderMatrix(ideas); else renderRanked(ideas);
+    renderDetail(ideas);
+  }
+
+  function renameItem(type, id, newName){
+    newName = newName.trim();
+    var arr = type==='product' ? state.products : state.values;
+    var item = arr.filter(function(x){return x.id===id;})[0];
+    if (!item) return;
+    if (newName && newName.length<=20) item.name = newName;
+    renderAll();
+  }
+  function removeItem(type, id, btn){
+    var arr = type==='product' ? state.products : state.values;
+    if (arr.length<=1){
+      var chip = btn.closest('.echip');
+      if (chip){ chip.classList.remove('shake'); void chip.offsetWidth; chip.classList.add('shake'); }
+      return;
+    }
+    var idx = arr.findIndex(function(x){return x.id===id;});
+    if (idx>-1) arr.splice(idx,1);
+    renderAll();
+  }
+  function addItem(type, name){
+    name = name.trim();
+    if (!name) return;
+    if (type==='product'){
+      state.products.push({id:'p'+(state.nextProductId++), name:name});
+    } else {
+      state.values.push({id:'v'+(state.nextValueId++), name:name});
+    }
+    renderAll();
+  }
+
+  document.addEventListener('click', function(e){
+    var x = e.target.closest('.echip-x');
+    if (x){ removeItem(x.dataset.type, x.dataset.id, x); return; }
+
+    var rb = e.target.closest('.regen-btn');
+    if (rb && !rb.disabled){ runAiRegenerate(rb.dataset.product, rb.dataset.value); return; }
+
+    var rs = e.target.closest('.reset-btn');
+    if (rs){
+      delete state.aiCache[rs.dataset.product+'|'+rs.dataset.value];
+      delete state.aiErrors[rs.dataset.product+'|'+rs.dataset.value];
+      renderAll();
+      return;
+    }
+
+    var bulk = e.target.closest('#ai-bulk');
+    if (bulk){ runAiBulk(); return; }
+
+    var vb = e.target.closest('.viewbtn');
+    if (vb){
+      state.view = vb.dataset.view;
+      document.querySelectorAll('.viewbtn').forEach(function(b){ b.setAttribute('aria-pressed', b===vb); });
+      document.getElementById('sort-toggle').hidden = state.view!=='ranked';
+      renderAll();
+      return;
+    }
+    var sb = e.target.closest('#sort-toggle');
+    if (sb){
+      state.sortDesc = !state.sortDesc;
+      sb.textContent = state.sortDesc ? '綜合評分 高→低 ↓' : '綜合評分 低→高 ↑';
+      renderAll();
+      return;
+    }
+    var cell = e.target.closest('.cell, .rank-row');
+    if (cell && cell.dataset.key){
+      state.selected = cell.dataset.key;
+      var ideas = allIdeas();
+      if (state.view==='matrix') renderMatrix(ideas); else renderRanked(ideas);
+      renderDetail(ideas);
+    }
+  });
+
+  document.addEventListener('submit', function(e){
+    var form = e.target.closest('.add-form');
+    if (!form) return;
+    e.preventDefault();
+    var input = form.querySelector('input');
+    addItem(form.dataset.type, input.value);
+    input.value = '';
+    input.focus();
+  });
+
+  document.addEventListener('focusout', function(e){
+    var el = e.target.closest('.echip-text');
+    if (!el) return;
+    renameItem(el.dataset.type, el.dataset.id, el.textContent);
+  });
+  document.addEventListener('keydown', function(e){
+    if (e.key==='Enter' && e.target.closest('.echip-text')){
+      e.preventDefault();
+      e.target.blur();
+    }
+  });
+
+  if (window.matchMedia){
+    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', renderAll);
+  }
+
+  initAiPanel();
+  renderAll();
+})();
+</script>
