@@ -4,6 +4,13 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>創意打版台</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2F6B4F">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="創意打版台">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Noto+Sans+TC:wght@400;500;600&family=Noto+Serif+TC:wght@600;700&display=swap" rel="stylesheet">
 <style>
@@ -211,7 +218,10 @@
 
   /* ---------- workbench layout ---------- */
   .workbench{display:grid;grid-template-columns:1fr 340px;gap:20px;align-items:start;}
-  @media (max-width:880px){.workbench{grid-template-columns:1fr;}}
+  @media (max-width:880px){
+    .workbench{grid-template-columns:1fr;}
+    .detail{max-height:none;overflow:visible;}
+  }
 
   /* ---------- matrix ---------- */
   .matrix{display:grid;grid-template-columns:118px repeat(var(--val-count,3),1fr);gap:10px;}
@@ -289,7 +299,7 @@
   .step-score{font-family:'IBM Plex Mono',monospace;font-weight:700;font-variant-numeric:tabular-nums;}
   .step-text{font-size:12px;line-height:1.65;color:var(--ink-dim);margin:0;}
   .overall-row{
-    display:flex;align-items:center;justify-content:space-between;gap:10px;
+    display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;
     background:var(--surface-2);border:1px solid var(--line-strong);border-radius:4px;padding:10px 14px;
   }
   .overall-label{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.06em;color:var(--ink-dim);}
@@ -369,6 +379,18 @@
     gap:10px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink-dim);text-align:center;
   }
   .footer-meta a{color:var(--ink-dim);}
+  .footer-link-btn{
+    font-family:'IBM Plex Mono',monospace;font-size:11px;padding:3px 10px;border-radius:999px;
+    border:1px solid var(--line-strong);background:var(--surface);color:var(--ink-dim);cursor:pointer;
+  }
+  .footer-link-btn:hover{color:var(--accent);border-color:var(--accent);}
+  .toast{
+    position:fixed;left:50%;bottom:26px;transform:translate(-50%,20px);
+    background:var(--surface);border:1px solid var(--accent);color:var(--ink);
+    padding:10px 18px;border-radius:8px;font-size:13px;opacity:0;pointer-events:none;
+    transition:.2s;z-index:3000;box-shadow:var(--shadow);
+  }
+  .toast.show{opacity:1;transform:translate(-50%,0);}
 
   /* ---------- print report ---------- */
   #printReportRoot{display:none;}
@@ -473,9 +495,12 @@
   <div class="footer-meta">
     <span>© 2026 創意打版台</span>
     <img src="https://visitor-badge.laobi.icu/badge?page_id=m255525.innovation-matrix-studio" alt="訪客次數" style="vertical-align:middle;height:20px;">
+    <button type="button" id="installBtn" class="footer-link-btn">📲 加入主畫面</button>
     <a href="manual.html">操作手冊 →</a>
   </div>
 </footer>
+
+<div class="toast" id="toast" role="status"></div>
 
 <div id="printReportRoot"></div>
 <img id="wmImg" alt="">
@@ -550,6 +575,69 @@
   render(loadCache());
   fetchMarquee();
   setInterval(fetchMarquee, REFRESH_MS);
+})();
+</script>
+
+<script>
+/* ================= PWA 加入主畫面（獨立運作，跟下方主程式邏輯無關） ================= */
+(function () {
+  'use strict';
+  var deferredPrompt = null;
+  var btn = document.getElementById('installBtn');
+
+  var ua = navigator.userAgent || '';
+  var isIOSDevice = /iPad|iPhone|iPod/.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  var isMacDesktop = /Macintosh/.test(ua) && !isIOSDevice;
+  var isSafariEngine = /^((?!chrome|crios|fxios|edgios|android).)*safari/i.test(ua);
+  var isStandalone = (window.matchMedia && window.matchMedia('(display-mode: standalone)').matches) || window.navigator.standalone === true;
+
+  function fallbackMessage() {
+    if (isIOSDevice) return '請點畫面上的「分享」圖示，選「加入主畫面」';
+    if (isMacDesktop && isSafariEngine) return '請用選單列「檔案」→「加入 Dock」（Safari 17 以上）';
+    return '目前瀏覽器不支援安裝，或已安裝過';
+  }
+
+  function notify(msg) {
+    var t = document.getElementById('toast');
+    if (!t) { window.alert(msg); return; }
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(notify._timer);
+    notify._timer = setTimeout(function () { t.classList.remove('show'); }, 2400);
+  }
+
+  window.addEventListener('beforeinstallprompt', function (e) {
+    e.preventDefault();
+    deferredPrompt = e;
+  });
+  window.addEventListener('appinstalled', function () {
+    deferredPrompt = null;
+  });
+
+  if (btn) {
+    if (isStandalone) {
+      btn.style.display = 'none';
+    } else {
+      btn.addEventListener('click', function () {
+        if (!deferredPrompt) {
+          notify(fallbackMessage());
+          return;
+        }
+        try {
+          deferredPrompt.prompt();
+          deferredPrompt.userChoice.then(function () { deferredPrompt = null; });
+        } catch (e) {
+          notify(fallbackMessage());
+        }
+      });
+    }
+  }
+
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('service-worker.js').catch(function () {});
+    });
+  }
 })();
 </script>
 
