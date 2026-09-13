@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>操作手冊 · 創意打版台</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600&family=Noto+Sans+TC:wght@400;500;600&family=Noto+Serif+TC:wght@600;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#EEF0E2; --surface:#FFFFFF; --surface-2:#F6F7EE;
+    --ink:#1E2A22; --ink-dim:#5B664F; --line:#C9CDB4; --line-strong:#AFB598;
+    --accent:#2F6B4F; --accent-ink:#FFFFFF;
+  }
+  *{box-sizing:border-box;}
+  body{margin:0;background:var(--bg);color:var(--ink);font-family:'Noto Sans TC',sans-serif;line-height:1.75;}
+  a{color:var(--accent);}
+  .topbar{
+    display:flex;align-items:center;justify-content:space-between;padding:14px 20px;flex-wrap:wrap;gap:10px;
+    border-bottom:1px solid var(--line-strong);background:var(--surface);
+  }
+  .brand{display:flex;align-items:center;gap:8px;font-weight:700;font-family:'Noto Serif TC',serif;}
+  .brand .dot{width:9px;height:9px;border-radius:50%;background:var(--accent);}
+  .topbar a.back{
+    font-family:'IBM Plex Mono',monospace;font-size:12.5px;color:var(--ink-dim);text-decoration:none;
+    border:1px solid var(--line-strong);padding:6px 12px;border-radius:999px;
+  }
+  .topbar a.back:hover{color:var(--accent);border-color:var(--accent);}
+  main{max-width:720px;margin:0 auto;padding:36px 20px 70px;}
+  h1{font-family:'Noto Serif TC',serif;font-size:26px;margin:0 0 8px;}
+  .sub{color:var(--ink-dim);margin:0 0 30px;font-size:14px;}
+  .card{background:var(--surface);border:1px solid var(--line-strong);border-radius:6px;padding:20px 22px;margin-bottom:16px;}
+  .card h2{font-family:'Noto Serif TC',serif;font-size:17px;margin:0 0 12px;color:var(--accent);}
+  .card p, .card li{color:var(--ink);font-size:14px;}
+  .card ul, .card ol{padding-left:20px;margin:8px 0;}
+  .tip{background:var(--surface-2);border:1px solid var(--line-strong);border-radius:6px;padding:12px 16px;font-size:13px;color:var(--ink-dim);margin-top:10px;}
+  .warn{background:var(--surface-2);border:1px solid #B23A24;border-radius:6px;padding:12px 16px;font-size:13px;color:var(--ink);}
+  .warn strong{color:#B23A24;}
+  table{width:100%;border-collapse:collapse;margin-top:10px;font-size:13px;}
+  th, td{border:1px solid var(--line-strong);padding:7px 9px;text-align:left;}
+  th{background:var(--surface-2);font-family:'IBM Plex Mono',monospace;font-weight:600;}
+  code{font-family:'IBM Plex Mono',monospace;background:var(--surface-2);padding:1px 5px;border-radius:3px;}
+  footer{border-top:1px solid var(--line-strong);background:var(--surface);padding:20px;text-align:center;font-size:12px;color:var(--ink-dim);}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand"><span class="dot"></span><span>創意打版台</span></div>
+  <a class="back" href="index.html">← 回到工具</a>
+</div>
+
+<main>
+  <h1>操作手冊</h1>
+  <p class="sub">把產品清單跟附加價值清單交叉配對，逐格用五個商業構面評分，協助發想與比較新產品創意的方向。</p>
+
+  <div class="card">
+    <h2>基本操作</h2>
+    <ol>
+      <li>頁面預設帶入「襪子／帽子／衣服」×「設計／功能性／安全性」共 9 格範例，可直接點格子瀏覽</li>
+      <li>「產品」「附加價值」兩排標籤都可以編輯：點文字可直接改名、點 <code>×</code> 可移除（至少各留一項）、輸入框打字按 <code>＋</code> 可新增，矩陣會立刻重新產生</li>
+      <li>點任一格，右側「規格卡」會顯示該組合的完整創新描述與五構面評分理由</li>
+      <li>上方「矩陣檢視／排行檢視」可切換整齊的九宮格排列，或依綜合評分排序的清單；排行檢視旁的按鈕可切換高→低／低→高</li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <h2>五構面商業評分</h2>
+    <p>每個組合都用以下五個構面各評 1-5 分，並附上具體理由，再取平均得到綜合評分（1-5 分）：</p>
+    <table>
+      <tr><th>構面</th><th>說明</th></tr>
+      <tr><td>市場需求</td><td>消費者對這個附加價值的需求強弱</td></tr>
+      <tr><td>收益性</td><td>能否支撐更高定價、獲利空間</td></tr>
+      <tr><td>競爭優勢</td><td>是否容易被模仿、差異化能維持多久</td></tr>
+      <tr><td>可擴展性</td><td>能否規模化生產、延伸到其他品項</td></tr>
+      <tr><td>社會影響</td><td>對特定族群或社會層面的正向外溢效果</td></tr>
+    </table>
+    <p class="tip">綜合評分會換算成等第：優異（≥4.2）／良好（≥3.2）／普通（≥2.2）／待加強（其餘），跟工作區的「商業創意產生器」「商業策略工作室」用同一套等第標準，方便交叉比對。</p>
+  </div>
+
+  <div class="card">
+    <h2>不填金鑰也能用：規則式示範</h2>
+    <p>沒有 API 金鑰時，每格內容由內建規則產生——同樣的產品與附加價值名稱一定會產生同樣的結果（不是隨機亂數），方便重複比對，但文字偏向套版示範，不是真正理解你輸入的產品特性。</p>
+  </div>
+
+  <div class="card">
+    <h2>選用：串接 AI 生成更貼切的內容</h2>
+    <ol>
+      <li>在「AI 優化」區塊選擇服務商（Claude／OpenAI／Gemini／OpenRouter），填入你自己申請的 API 金鑰</li>
+      <li>金鑰只會存在你自己瀏覽器的 localStorage，不會上傳到任何伺服器，也不會經過本工具的任何後端</li>
+      <li>可在「自訂提示詞」欄位輸入額外考量條件（例如「特別著重年輕族群」），或直接點下方的預設提示詞快速帶入，AI 會把這個條件融入內容與評分理由</li>
+      <li>點右側規格卡的「🤖 用 AI 重新生成」，只重新生成目前選取的這一格；已用 AI 生成過的格子會顯示「AI 生成」標籤，可點「↺ 還原規則式」復原</li>
+      <li>點「🤖 全部套用 AI」會依序把矩陣裡每個組合都送給 AI 重新生成，過程會顯示進度，也可以隨時按「⏹ 停止套用」中斷</li>
+      <li>AI 回傳內容會逐項檢查格式，標題／描述／任一構面缺漏或不合法時，只有那一項會退回規則式內容，不會整格失敗</li>
+    </ol>
+    <div class="warn"><strong>費用提醒：</strong>填入金鑰後每次呼叫都是直接連到該服務商的正式 API，會依你與該服務商的方案計費，本工具不會向你收取任何額外費用，也無法得知或控制實際花費。</div>
+  </div>
+
+  <div class="card">
+    <h2>下載報告</h2>
+    <p>上方「報告」按鈕會把<strong>目前矩陣裡所有組合</strong>（包含你編輯過的清單與 AI 生成內容）彙整成一份報告：</p>
+    <ul>
+      <li><strong>下載報告（TXT）</strong>：純文字檔，包含綜合評分排行與每格的完整描述、五構面理由</li>
+      <li><strong>匯出報告（PDF）</strong>：呼叫瀏覽器的列印功能，另存為 PDF；版面為表格化整理，並附上淡淡的浮水印</li>
+    </ul>
+  </div>
+
+  <div class="card">
+    <h2>注意事項</h2>
+    <ul>
+      <li>評分為規則式推演或 AI 生成的示範內容，非真實市場調查數據，僅供發想比較之用</li>
+      <li>請勿輸入真實個資、機密資料或受著作權保護的他人內容</li>
+      <li>AI 生成內容可能有誤，正式決策前請自行查證</li>
+      <li>僅供教學、課程及個人使用，禁止未經授權公開發布、販售或商業化使用</li>
+    </ul>
+  </div>
+</main>
+
+<footer>製作：Mark Tsai（蔡豐全）｜<a href="mailto:tsaimark@gmail.com">tsaimark@gmail.com</a>｜<a href="index.html">回到創意打版台</a></footer>
+
+</body>
+</html>
