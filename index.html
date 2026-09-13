@@ -238,6 +238,13 @@
     font:inherit;font-size:13px;border:1px solid var(--line-strong);border-radius:6px;
     padding:6px 10px;background:var(--surface);color:var(--ink);width:130px;flex:1 1 130px;min-width:110px;
   }
+  .identity-field{
+    display:flex;flex-direction:column;gap:4px;flex:1 1 130px;min-width:110px;cursor:text;
+  }
+  .identity-field-label{
+    font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.05em;color:var(--ink-dim);
+  }
+  .identity-field .add-form-input{width:100%;flex:none;}
   .detail-identity{
     font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink-dim);
     padding-bottom:8px;margin-bottom:10px;border-bottom:1px dashed var(--line);
@@ -534,10 +541,10 @@
   <div class="editor">
     <div class="editor-hint">身分資訊（選填）：會顯示在下方「下載截圖／分享」的內容裡，不會送進 AI、不影響評分。</div>
     <div class="editor-row">
-      <input type="text" id="identity-name" class="add-form-input" placeholder="姓名" maxlength="20">
-      <input type="text" id="identity-group" class="add-form-input" placeholder="組別" maxlength="20">
-      <input type="text" id="identity-dept" class="add-form-input" placeholder="系所" maxlength="20">
-      <input type="text" id="identity-student" class="add-form-input" placeholder="學號" maxlength="20">
+      <label class="identity-field"><span class="identity-field-label">姓名</span><input type="text" id="identity-name" class="add-form-input" placeholder="選填" maxlength="20"></label>
+      <label class="identity-field"><span class="identity-field-label">組別</span><input type="text" id="identity-group" class="add-form-input" placeholder="選填" maxlength="20"></label>
+      <label class="identity-field"><span class="identity-field-label">系所</span><input type="text" id="identity-dept" class="add-form-input" placeholder="選填" maxlength="20"></label>
+      <label class="identity-field"><span class="identity-field-label">學號</span><input type="text" id="identity-student" class="add-form-input" placeholder="選填" maxlength="20"></label>
     </div>
   </div>
 
