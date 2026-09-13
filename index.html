@@ -242,6 +242,11 @@
     font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink-dim);
     padding-bottom:8px;margin-bottom:10px;border-bottom:1px dashed var(--line);
   }
+  #capture-root{
+    background:var(--surface-2);border:1px solid var(--line-strong);border-radius:var(--radius);
+    padding:14px 16px;min-width:0;
+  }
+  #capture-root .detail-identity{margin-bottom:12px;}
 
   /* ---------- toolbar ---------- */
   .toolbar{
@@ -539,7 +544,7 @@
   <div class="report-bar">
     <button type="button" class="report-btn" id="shot-download">📷 下載截圖</button>
     <button type="button" class="report-btn" id="shot-share">📤 分享</button>
-    <span class="report-hint">擷取目前右側規格卡（含身分資訊），可用來繳交或分享成果。</span>
+    <span class="report-hint">擷取目前矩陣／排行檢視畫面（含身分資訊），可用來繳交或分享成果。</span>
   </div>
 
   <div class="toolbar">
@@ -551,7 +556,10 @@
   </div>
 
   <div class="workbench">
-    <div id="stage"></div>
+    <div id="capture-root">
+      <div class="detail-identity" id="detail-identity"></div>
+      <div id="stage"></div>
+    </div>
     <aside class="detail" id="detail" aria-live="polite"></aside>
   </div>
 
@@ -1385,8 +1393,7 @@
       + (idea.source==='ai' ? '<button class="mini-btn reset-btn" data-product="'+pn+'" data-value="'+vn+'">↺ 還原規則式</button>' : '')
       + '</div>'
       + (aiError ? '<div class="ai-error">'+escapeHtml(aiError)+'</div>' : '');
-    var html = '<div class="detail-identity" id="detail-identity">'+escapeHtml(identityLine(false))+'</div>'
-      + '<div class="detail-eyebrow">'+escapeHtml(p?p.name:'')+' × '+escapeHtml(vName)+'</div>'
+    var html = '<div class="detail-eyebrow">'+escapeHtml(p?p.name:'')+' × '+escapeHtml(vName)+'</div>'
       + '<h2>'+escapeHtml(idea.title)+'</h2>'
       + aiRow
       + '<p class="detail-desc">'+escapeHtml(idea.desc)+'</p>'
@@ -1405,6 +1412,7 @@
     renderChips();
     if (state.view==='matrix') renderMatrix(ideas); else renderRanked(ideas);
     renderDetail(ideas);
+    updateDetailIdentity(false);
   }
 
   function renameItem(type, id, newName){
@@ -1604,7 +1612,7 @@
 
   function captureDetailCanvas(){
     updateDetailIdentity(true);
-    return html2canvas(document.getElementById('detail'), {backgroundColor:null, scale:2})
+    return html2canvas(document.getElementById('capture-root'), {backgroundColor:null, scale:2})
       .finally(function(){ updateDetailIdentity(false); });
   }
 
