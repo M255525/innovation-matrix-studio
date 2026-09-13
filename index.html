@@ -94,6 +94,45 @@
   }
   #marqueeTrack a{color:inherit;text-decoration:underline;}
   @keyframes marquee-scroll{from{transform:translateX(0);}to{transform:translateX(-50%);}}
+
+  /* ---------- license gate ---------- */
+  #licenseGate{
+    position:fixed;inset:0;background:rgba(20,26,20,.92);z-index:2200;
+    display:flex;align-items:center;justify-content:center;padding:20px;
+  }
+  #licenseGate.hidden{display:none;}
+  .gate-box{
+    background:var(--surface);border:1px solid var(--line-strong);border-radius:var(--radius);
+    box-shadow:var(--shadow);padding:30px 28px;width:420px;max-width:92vw;text-align:center;
+  }
+  .gate-logo{font-family:'Noto Serif TC',serif;font-size:19px;font-weight:700;margin-bottom:8px;color:var(--ink);}
+  .gate-logo span{color:var(--accent);}
+  .gate-desc{font-size:13px;color:var(--ink-dim);margin-bottom:18px;line-height:1.7;}
+  .gate-row{display:flex;gap:8px;margin-bottom:12px;}
+  .gate-row input{
+    flex:1;min-width:0;background:var(--surface-2);color:var(--ink);border:1px solid var(--line-strong);
+    border-radius:6px;padding:10px 12px;font-family:inherit;font-size:14px;
+  }
+  .gate-row input:focus{border-color:var(--accent);outline:none;}
+  .gate-btn{
+    flex:none;background:none;border:1px solid var(--line-strong);color:var(--ink-dim);
+    border-radius:6px;padding:10px 14px;cursor:pointer;font-size:14px;font-family:inherit;
+  }
+  .gate-btn-primary{
+    width:100%;margin-bottom:12px;background:var(--accent);color:var(--accent-ink);border:none;
+    border-radius:6px;padding:11px 14px;cursor:pointer;font-weight:700;font-size:14px;font-family:inherit;
+  }
+  .gate-status{display:block;font-size:12.5px;font-weight:600;padding:8px 10px;border-radius:6px;background:var(--surface-2);color:var(--ink-dim);}
+  .gate-status.ok{background:var(--surface-2);color:var(--g-a);}
+  .gate-status.bad{background:var(--surface-2);color:var(--g-d);}
+  .gate-status.pending{opacity:.85;}
+  .license-badge{
+    position:absolute;top:14px;right:16px;font-family:'IBM Plex Mono',monospace;font-size:11px;font-weight:600;
+    padding:4px 10px;border-radius:999px;background:var(--surface-2);color:var(--g-a);white-space:nowrap;
+    border:1px solid var(--line-strong);
+  }
+  .license-badge.warn{color:var(--g-d);}
+
   .wrap{max-width:1120px;margin:0 auto;}
 
   /* ---------- header tag ---------- */
@@ -194,6 +233,14 @@
   .add-form button{
     border:1px solid var(--line-strong);background:var(--accent);color:var(--accent-ink);
     border-radius:50%;width:26px;height:26px;cursor:pointer;font-size:15px;line-height:1;
+  }
+  .add-form-input{
+    font:inherit;font-size:13px;border:1px solid var(--line-strong);border-radius:6px;
+    padding:6px 10px;background:var(--surface);color:var(--ink);width:130px;flex:1 1 130px;min-width:110px;
+  }
+  .detail-identity{
+    font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--ink-dim);
+    padding-bottom:8px;margin-bottom:10px;border-bottom:1px dashed var(--line);
   }
 
   /* ---------- toolbar ---------- */
@@ -413,11 +460,25 @@
 </head>
 <body>
 
+<div id="licenseGate">
+  <div class="gate-box">
+    <div class="gate-logo">🧵 <span>創意打版台</span></div>
+    <div class="gate-desc">本工具需輸入授權序號並按「確認」驗證通過後才能使用。序號自第一次驗證起提供 12 個月使用期限。</div>
+    <div class="gate-row">
+      <input type="password" id="gateSerial" placeholder="請輸入授權序號" autocomplete="off">
+      <button type="button" class="gate-btn" id="btnGateToggle" title="顯示／隱藏序號" aria-label="顯示／隱藏序號">👁</button>
+    </div>
+    <button type="button" class="gate-btn-primary" id="btnGateConfirm">確認</button>
+    <span id="gateStatus" class="gate-status pending">尚未驗證</span>
+  </div>
+</div>
+
 <div id="marqueeBar"><div id="marqueeTrack"></div></div>
 
 <div class="wrap">
 
   <div class="tag">
+    <span id="licenseBadge" class="license-badge" style="display:none;"></span>
     <div class="eyebrow">PRODUCT × VALUE INNOVATION MATRIX</div>
     <h1>創意打版台</h1>
     <p>把產品跟附加價值攤在打版桌上交叉配對，每一格用「市場需求、收益性、競爭優勢、可擴展性、社會影響」五個商業構面各評 1-5 分，逐步列出評分理由再算出總平均，評分方式比照工作區的商業創意產生器與商業策略工作室。</p>
@@ -463,6 +524,22 @@
     <button type="button" class="report-btn" id="report-txt">📄 下載報告（TXT）</button>
     <button type="button" class="report-btn" id="report-pdf">🖨️ 匯出報告（PDF）</button>
     <span class="report-hint">報告涵蓋目前矩陣裡所有組合的完整內容與評分。</span>
+  </div>
+
+  <div class="editor">
+    <div class="editor-hint">身分資訊（選填）：會顯示在下方「下載截圖／分享」的內容裡，不會送進 AI、不影響評分。</div>
+    <div class="editor-row">
+      <input type="text" id="identity-name" class="add-form-input" placeholder="姓名" maxlength="20">
+      <input type="text" id="identity-group" class="add-form-input" placeholder="組別" maxlength="20">
+      <input type="text" id="identity-dept" class="add-form-input" placeholder="系所" maxlength="20">
+      <input type="text" id="identity-student" class="add-form-input" placeholder="學號" maxlength="20">
+    </div>
+  </div>
+
+  <div class="report-bar">
+    <button type="button" class="report-btn" id="shot-download">📷 下載截圖</button>
+    <button type="button" class="report-btn" id="shot-share">📤 分享</button>
+    <span class="report-hint">擷取目前右側規格卡（含身分資訊），可用來繳交或分享成果。</span>
   </div>
 
   <div class="toolbar">
@@ -640,6 +717,130 @@
   }
 })();
 </script>
+
+<script>
+/* 序號授權閘門 — 獨立運作；鎖定整個工具 */
+(function () {
+  'use strict';
+  var LICENSE_CHECK_URL = "https://script.google.com/macros/s/AKfycbzs9CRkSTYHqU2DOOiU5QniVlERd_ofQh0rJJfjwRYYzGFc-Znl2FwJn6vUPH_HJNZi/exec";
+  var STORAGE_KEY = 'innovationMatrixSerial';
+  var RECHECK_MS = 20 * 60 * 1000;
+
+  var gate = document.getElementById('licenseGate');
+  var input = document.getElementById('gateSerial');
+  var toggleBtn = document.getElementById('btnGateToggle');
+  var confirmBtn = document.getElementById('btnGateConfirm');
+  var statusEl = document.getElementById('gateStatus');
+  var badgeEl = document.getElementById('licenseBadge');
+
+  function loadSerial() { return localStorage.getItem(STORAGE_KEY) || ''; }
+  function saveSerial(s) { localStorage.setItem(STORAGE_KEY, s); }
+
+  var REASON_LABEL = {
+    missing_serial: '請輸入授權序號',
+    serial_not_found: '查無此授權序號，請確認輸入是否正確',
+    expired: '此序號已逾使用期限',
+    network_error: '無法連線授權伺服器，請檢查網路連線',
+    server_error: '授權伺服器發生錯誤，請稍後再試'
+  };
+
+  function checkLicense(serial, attempt) {
+    attempt = attempt || 1;
+    if (!LICENSE_CHECK_URL) {
+      return Promise.reject(new Error('尚未設定授權伺服器網址，請聯繫工具提供者'));
+    }
+    return fetch(LICENSE_CHECK_URL, {
+      method: 'POST',
+      body: JSON.stringify({ serial: serial }),
+      signal: AbortSignal.timeout(40000)
+    }).catch(function (err) {
+      throw new Error(err.name === 'TimeoutError' ? '授權伺服器回應時間較長，請稍候片刻後再試一次' : '無法連線授權伺服器，請檢查網路連線');
+    }).then(function (resp) {
+      if (!resp.ok) throw new Error('授權伺服器回應異常（' + resp.status + '）');
+      return resp.text();
+    }).then(function (text) {
+      var parsed;
+      try { parsed = JSON.parse(text); } catch (e) { parsed = null; }
+      if (!parsed || typeof parsed.valid !== 'boolean') {
+        if (attempt < 3) return checkLicense(serial, attempt + 1);
+        throw new Error('授權伺服器回應異常，請稍後再試一次');
+      }
+      return parsed;
+    });
+  }
+
+  function daysLeft(license) {
+    if (!license.expiresAt) return null;
+    return Math.ceil((new Date(license.expiresAt) - new Date()) / 86400000);
+  }
+  function fmtDays(license) {
+    if (!license.expiresAt) return '';
+    var expireStr = new Date(license.expiresAt).toLocaleDateString();
+    var days = daysLeft(license);
+    return '剩餘 ' + Math.max(days, 0) + ' 天可用（至 ' + expireStr + '）';
+  }
+  function updateBadge(license) {
+    if (!badgeEl) return;
+    var days = daysLeft(license);
+    if (days === null) { badgeEl.style.display = 'none'; return; }
+    badgeEl.textContent = '🔑 剩餘 ' + Math.max(days, 0) + ' 天';
+    badgeEl.title = '授權序號使用期限至 ' + new Date(license.expiresAt).toLocaleDateString();
+    badgeEl.className = 'license-badge' + (days <= 7 ? ' warn' : '');
+    badgeEl.style.display = 'inline-block';
+  }
+  function unlock(license) {
+    var label = fmtDays(license) || '序號有效';
+    statusEl.className = 'gate-status ok';
+    statusEl.textContent = '✓ ' + label;
+    gate.classList.add('hidden');
+    updateBadge(license);
+  }
+  function lock(reasonText) {
+    statusEl.className = 'gate-status bad';
+    statusEl.textContent = '✗ ' + reasonText;
+    gate.classList.remove('hidden');
+    if (badgeEl) badgeEl.style.display = 'none';
+  }
+  function runCheck(serial, opts) {
+    opts = opts || {};
+    if (!serial) {
+      statusEl.className = 'gate-status bad';
+      statusEl.textContent = REASON_LABEL.missing_serial;
+      return Promise.resolve({ valid: false, reason: 'missing_serial' });
+    }
+    if (!opts.silent) {
+      statusEl.className = 'gate-status pending';
+      statusEl.textContent = '驗證中…';
+    }
+    return checkLicense(serial).then(function (license) {
+      if (license.valid) unlock(license);
+      else lock(REASON_LABEL[license.reason] || license.message || '授權序號驗證失敗');
+      return license;
+    }).catch(function (err) {
+      lock(err.message);
+      return { valid: false, reason: 'network_error', message: err.message };
+    });
+  }
+
+  confirmBtn.addEventListener('click', function () {
+    var serial = input.value.trim();
+    saveSerial(serial);
+    runCheck(serial);
+  });
+  input.addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); confirmBtn.click(); } });
+  toggleBtn.addEventListener('click', function () { input.type = input.type === 'password' ? 'text' : 'password'; });
+
+  input.value = loadSerial();
+  if (input.value) runCheck(input.value, { silent: true });
+
+  setInterval(function () {
+    var serial = loadSerial();
+    if (serial) runCheck(serial, { silent: true });
+  }, RECHECK_MS);
+})();
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
 
 <script>
 (function(){
@@ -1174,7 +1375,8 @@
       + (idea.source==='ai' ? '<button class="mini-btn reset-btn" data-product="'+pn+'" data-value="'+vn+'">↺ 還原規則式</button>' : '')
       + '</div>'
       + (aiError ? '<div class="ai-error">'+escapeHtml(aiError)+'</div>' : '');
-    var html = '<div class="detail-eyebrow">'+escapeHtml(p?p.name:'')+' × '+escapeHtml(vName)+'</div>'
+    var html = '<div class="detail-identity" id="detail-identity">'+escapeHtml(identityLine(false))+'</div>'
+      + '<div class="detail-eyebrow">'+escapeHtml(p?p.name:'')+' × '+escapeHtml(vName)+'</div>'
       + '<h2>'+escapeHtml(idea.title)+'</h2>'
       + aiRow
       + '<p class="detail-desc">'+escapeHtml(idea.desc)+'</p>'
@@ -1256,6 +1458,11 @@
     var rpdf = e.target.closest('#report-pdf');
     if (rpdf){ printPdfReport(); return; }
 
+    var shotDl = e.target.closest('#shot-download');
+    if (shotDl){ downloadScreenshot(); return; }
+    var shotShare = e.target.closest('#shot-share');
+    if (shotShare){ shareScreenshot(); return; }
+
     var vb = e.target.closest('.viewbtn');
     if (vb){
       state.view = vb.dataset.view;
@@ -1315,6 +1522,107 @@
     a.href = url; a.download = filename;
     document.body.appendChild(a); a.click(); document.body.removeChild(a);
     setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
+  }
+
+  /* ---------- 身分資訊（選填）＋下載截圖／分享 ---------- */
+  var IDENTITY_KEY = 'imsIdentity';
+  var IDENTITY_IDS = ['identity-name','identity-group','identity-dept','identity-student'];
+
+  function notifyToast(msg){
+    var t = document.getElementById('toast');
+    if (!t){ window.alert(msg); return; }
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(notifyToast._timer);
+    notifyToast._timer = setTimeout(function(){ t.classList.remove('show'); }, 2400);
+  }
+
+  function loadIdentity(){
+    try{ return JSON.parse(localStorage.getItem(IDENTITY_KEY)) || {}; }catch(e){ return {}; }
+  }
+  function persistIdentity(){
+    try{
+      var data = {};
+      IDENTITY_IDS.forEach(function(id){ data[id] = document.getElementById(id).value; });
+      localStorage.setItem(IDENTITY_KEY, JSON.stringify(data));
+    }catch(e){}
+  }
+  function initIdentityFields(){
+    var saved = loadIdentity();
+    IDENTITY_IDS.forEach(function(id){
+      var el = document.getElementById(id);
+      el.value = saved[id] || '';
+      el.addEventListener('input', function(){
+        persistIdentity();
+        updateDetailIdentity(false);
+      });
+    });
+  }
+
+  function formatDownloadTimestamp(){
+    var d = new Date();
+    function pad(n){ return String(n).padStart(2,'0'); }
+    return d.getFullYear()+'-'+pad(d.getMonth()+1)+'-'+pad(d.getDate())+' '+pad(d.getHours())+':'+pad(d.getMinutes());
+  }
+
+  function identityLine(withTimestamp){
+    var name = document.getElementById('identity-name').value.trim();
+    var group = document.getElementById('identity-group').value.trim();
+    var dept = document.getElementById('identity-dept').value.trim();
+    var sid = document.getElementById('identity-student').value.trim();
+    if (!withTimestamp && !name && !group && !dept && !sid){
+      return '（未填寫姓名／組別／系所／學號）';
+    }
+    var nameDisplay = withTimestamp ? (name || '未填寫') + '（下載時間：'+formatDownloadTimestamp()+'）' : name || '未填寫';
+    var parts = ['姓名：'+nameDisplay];
+    if (group) parts.push('組別：'+group);
+    if (dept) parts.push('系所：'+dept);
+    if (sid) parts.push('學號：'+sid);
+    return parts.join('　｜　');
+  }
+
+  function updateDetailIdentity(withTimestamp){
+    var el = document.getElementById('detail-identity');
+    if (el) el.textContent = identityLine(withTimestamp);
+  }
+
+  function buildExportFilename(){
+    var sid = document.getElementById('identity-student').value.trim().replace(/[^A-Za-z0-9一-龥]/g,'');
+    var date = new Date().toISOString().slice(0,10);
+    return sanitizeFilename('創意打版台'+(sid ? ('-'+sid) : '')+'-'+date);
+  }
+
+  function captureDetailCanvas(){
+    updateDetailIdentity(true);
+    return html2canvas(document.getElementById('detail'), {backgroundColor:null, scale:2})
+      .finally(function(){ updateDetailIdentity(false); });
+  }
+
+  function downloadScreenshot(){
+    if (!state.selected){ notifyToast('請先選一格再下載截圖'); return; }
+    if (typeof html2canvas !== 'function'){ notifyToast('截圖功能載入失敗，請檢查網路連線'); return; }
+    captureDetailCanvas().then(function(canvas){
+      canvas.toBlob(function(blob){
+        downloadBlob(blob, buildExportFilename()+'.png');
+      }, 'image/png');
+    }).catch(function(){ notifyToast('截圖失敗，請稍後再試'); });
+  }
+
+  function shareScreenshot(){
+    if (!state.selected){ notifyToast('請先選一格再分享'); return; }
+    if (typeof html2canvas !== 'function'){ notifyToast('截圖功能載入失敗，請檢查網路連線'); return; }
+    captureDetailCanvas().then(function(canvas){
+      canvas.toBlob(function(blob){
+        var filename = buildExportFilename()+'.png';
+        var file = new File([blob], filename, {type:'image/png'});
+        if (navigator.share && navigator.canShare && navigator.canShare({files:[file]})){
+          navigator.share({files:[file], title:'創意打版台'}).catch(function(){});
+        } else {
+          downloadBlob(blob, filename);
+          notifyToast('此瀏覽器不支援分享，已改為下載圖片');
+        }
+      }, 'image/png');
+    }).catch(function(){ notifyToast('截圖失敗，請稍後再試'); });
   }
 
   function rankedIdeas(){
@@ -1393,6 +1701,7 @@
   }
 
   initAiPanel();
+  initIdentityFields();
   renderAll();
 })();
 </script>
