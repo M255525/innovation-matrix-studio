@@ -744,29 +744,39 @@
     server_error: '授權伺服器發生錯誤，請稍後再試'
   };
 
-  function checkLicense(serial, attempt) {
+  function sleepMs(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+
+  // Apps Script 剛部署新版本或冷啟動時，偶爾會回傳暫時性的 404（Google 端的 echo 端點還沒就緒），
+  // 不是序號本身有問題——這裡連同逾時、非2xx狀態、格式異常都一起重試，最多 4 次，短暫退避即可恢復正常。
+  async function checkLicense(serial, attempt) {
     attempt = attempt || 1;
+    var MAX_TRIES = 4;
     if (!LICENSE_CHECK_URL) {
-      return Promise.reject(new Error('尚未設定授權伺服器網址，請聯繫工具提供者'));
+      throw new Error('尚未設定授權伺服器網址，請聯繫工具提供者');
     }
-    return fetch(LICENSE_CHECK_URL, {
-      method: 'POST',
-      body: JSON.stringify({ serial: serial }),
-      signal: AbortSignal.timeout(40000)
-    }).catch(function (err) {
+    var resp;
+    try {
+      resp = await fetch(LICENSE_CHECK_URL, {
+        method: 'POST',
+        body: JSON.stringify({ serial: serial }),
+        signal: AbortSignal.timeout(40000)
+      });
+    } catch (err) {
+      if (attempt < MAX_TRIES) { await sleepMs(1500 * attempt); return checkLicense(serial, attempt + 1); }
       throw new Error(err.name === 'TimeoutError' ? '授權伺服器回應時間較長，請稍候片刻後再試一次' : '無法連線授權伺服器，請檢查網路連線');
-    }).then(function (resp) {
-      if (!resp.ok) throw new Error('授權伺服器回應異常（' + resp.status + '）');
-      return resp.text();
-    }).then(function (text) {
-      var parsed;
-      try { parsed = JSON.parse(text); } catch (e) { parsed = null; }
-      if (!parsed || typeof parsed.valid !== 'boolean') {
-        if (attempt < 3) return checkLicense(serial, attempt + 1);
-        throw new Error('授權伺服器回應異常，請稍後再試一次');
-      }
-      return parsed;
-    });
+    }
+    if (!resp.ok) {
+      if (attempt < MAX_TRIES) { await sleepMs(1500 * attempt); return checkLicense(serial, attempt + 1); }
+      throw new Error('授權伺服器回應異常（' + resp.status + '），已重試多次仍失敗，請稍後再試');
+    }
+    var text = await resp.text();
+    var parsed;
+    try { parsed = JSON.parse(text); } catch (e) { parsed = null; }
+    if (!parsed || typeof parsed.valid !== 'boolean') {
+      if (attempt < MAX_TRIES) { await sleepMs(1500 * attempt); return checkLicense(serial, attempt + 1); }
+      throw new Error('授權伺服器回應異常，請稍後再試一次');
+    }
+    return parsed;
   }
 
   function daysLeft(license) {

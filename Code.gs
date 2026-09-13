@@ -7,8 +7,8 @@ const VALID_AMOUNT = 12; // 月
 const COL_SERIAL = "序號";
 const COL_START = "開始日期";
 const COL_END = "結束日期";
-// 序號資料不在第一個工作表時，把分頁名稱填在這裡；留空則自動用第一個工作表
-const SHEET_NAME = "";
+// 獨立分頁，避免跟共用試算表裡其他忙碌的分頁搶讀寫、拖慢驗證速度
+const SHEET_NAME = "InnovationMatrix序號";
 
 function doPost(e) {
   let result;
@@ -32,7 +32,14 @@ function doGet(e) {
 
 function getLicenseSheet_() {
   const ss = SpreadsheetApp.getActiveSpreadsheet();
-  return (SHEET_NAME && ss.getSheetByName(SHEET_NAME)) || ss.getSheets()[0];
+  if (!SHEET_NAME) return ss.getSheets()[0];
+  let sheet = ss.getSheetByName(SHEET_NAME);
+  if (!sheet) {
+    sheet = ss.insertSheet(SHEET_NAME);
+    sheet.getRange(1, 1, 1, 3).setValues([[COL_SERIAL, COL_START, COL_END]]);
+    sheet.getRange(2, 1).setValue("mark0131"); // 沿用既有測試序號，方便驗證
+  }
+  return sheet;
 }
 
 function checkOrActivate(serial) {
