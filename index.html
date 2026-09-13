@@ -820,7 +820,7 @@
     }
     if (!opts.silent) {
       statusEl.className = 'gate-status pending';
-      statusEl.textContent = '驗證中…';
+      statusEl.textContent = '驗證中…（首次連線有時需要 30 秒以上，請耐心等候）';
     }
     return checkLicense(serial).then(function (license) {
       if (license.valid) unlock(license);
